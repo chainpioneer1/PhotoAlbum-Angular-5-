@@ -1,0 +1,16 @@
+
+<div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-12">
+        <div *ngFor="let photo of photos; let i = index" class="mySlides" [ngClass]="{'active': i===slideIndex}">
+          <img src="{{photo.photo_uploaded_name}}" style="margin-bottom: 10px;width:100%">
+        </div>
+        
+        <a class="prev" (click)="plusSlides(-1)">❮</a>
+        <a class="next" (click)="plusSlides(1)">❯</a>
+      
+        <div class="row">
+          <div *ngFor="let photo of photos; let i = index" class="column">
+            <img class="demo cursor" src="{{photo.photo_uploaded_name}}" style="width:100%" (click)="currentSlide(i)" alt="The Woods">
+           
+          </div>
+          
+      </div>

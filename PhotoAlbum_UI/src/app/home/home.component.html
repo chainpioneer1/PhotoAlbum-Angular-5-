@@ -1,0 +1,175 @@
+﻿<link href="/src/assets/css/app.css" rel="stylesheet" type="text/html">
+<link href="/src/assets/css/style.css" rel="stylesheet" type="text/html">
+<style>
+    .modal-content {
+        max-width: 300px;
+        margin: auto;
+    }
+</style>
+<div id="app">
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="col-md-12">
+            <div class="navbar-header">
+
+                <!-- Collapsed Hamburger -->
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <!-- Branding Image -->
+                <a class="navbar-brand" href="/">
+                    PhotoAlbum
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                <!-- Left Side Of Navbar -->
+                <ul class="nav navbar-nav">
+                    &nbsp;
+                </ul>
+
+                <!-- Right Side Of Navbar -->
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- Authentication Links -->
+                    <li>
+                        <a href="javascript:" (click)="openUploadDlg()">
+                            <i class="fa fa-upload"> Photo</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:" (click)="group_error = '';openModal('addGroupModal')">
+                            <i class="fa fa-plus"></i> Add Group</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
+                            <i class="fa fa-users"></i> Group
+                            <span *ngIf="currentGroup !==null">{{currentGroup.group_name}}</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li *ngFor="let group of groups">
+                                <a href="javascript:" (click)="setCurrentGroup(group)">
+                                    <i class="fa fa-user"></i> {{group.group_name}}</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+
+                        <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
+                            <i class="fa fa-user-circle"></i> {{currentUser.name}}
+                            <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu" id="dropDownBtn">
+                            <li>
+                                <a href="/profile">
+                                    <i class="fa fa-key"></i> Profile</a>
+                            </li>
+
+                            <li>
+                                <a href="/logout">
+                                    <i class="fa fa-sign-out"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:" (click)="openAlbumSidebar()">
+                            <i class="fa fa-book"></i> Albums
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="content">
+        <div id="albumsidenav" class="sidenav" style="width: 0px">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Album name..." name="album_name" [(ngModel)]="new_album_name" />
+                <span class="input-group-btn">
+                    <button (click)="addAlbum()" class="btn btn-secondary" type="button">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </span>
+            </div>
+            <a *ngFor="let album of myAlbums | AlbumFilterPipe: filter" href="javascript:" (click)="loadPhotos(album)">
+                <i class="fa fa-book"></i> {{ album.album_name }}</a>
+        </div>
+        <photo></photo>
+    </div>
+    <footer class="main-footer">
+        <div class="container">
+            copywrite @ The PhotoAlbum 2018
+        </div>
+    </footer>
+    <modal id="addGroupModal">
+        <div class="modal">
+            <div class="modal-body">
+                <h1>Add Group</h1>
+                <p>
+                    Group Name:
+                    <input type="text" [(ngModel)]="new_group_name" />
+                </p>
+                <button (click)="closeModal('addGroupModal');">Close</button>
+            </div>
+        </div>
+        <div class="modal-background"></div>
+    </modal>
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" id="openAddDlgBtn" data-target="#addGroupModal" style="display: none">Open Modal</button>
+
+    <!-- Modal -->
+    <div id="addGroupModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div class="alert alert-danger" *ngIf="group_error!==''">{{group_error}}</div>
+                    <div class="alert alert-info" *ngIf="group_success!==''">{{group_success}}</div>
+                    <h2 style="text-align: center">Add Group</h2>
+                </div>
+                <div class="modal-body">
+                    <label>Group Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="new_group_name" required/>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button type="button" class="btn btn-default" (click)="addGroup()">
+                        <span class="fa fa-save"></span> Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" id="openPhotoDlgBtn" data-target="#addPhotoModal" style="display: none">Open Modal</button>
+    <div id="addPhotoModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                    <div class="modal-content">
+                    
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                
+                                <h2 style="text-align: center">Upload Photos</h2>
+                            </div>
+                            <div class="modal-body">
+                                <!-- <label>Please choose photo images.</label>
+                                <input type="file" class="form-control" required/> -->
+                                <dropzone class="dropzone-container" [config]="config" fxLayout="row" fxLayoutAlign="start strech" fxFlex="auto" [message]="'Click or drag images here to upload'" (error)="onUploadError($event)" (success)="onUploadSuccess($event)"></dropzone>
+                                <!-- <div class="dropzone-container" [dropzone]="config" (error)="onUploadError($event)" (success)="onUploadSuccess($event)"></div> -->
+                            </div>
+                            <div class="modal-footer" style="text-align: center">
+                                <button type="button" class="btn btn-default" (click)="savePhotos()">
+                                    <span class="fa fa-save"></span> Save</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+            </div>
+        </div>
+
+</div>
